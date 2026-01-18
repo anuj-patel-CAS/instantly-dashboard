@@ -40,6 +40,23 @@ export type CampaignAnalytics = {
   total_opportunity_value: number;
 };
 
+export type AnalyticsOverview = {
+  total_leads: number;
+  contacted: number;
+  emails_sent: number;
+  open_count: number;
+  link_click_count: number;
+  reply_count: number;
+  bounced_count: number;
+  unsubscribed_count: number;
+  total_opportunities: number;
+  total_opportunity_value: number;
+  total_interested: number;
+  total_meeting_booked: number;
+  total_meeting_completed: number;
+  total_closed: number;
+};
+
 const API_BASE_URL = '/api/v2';
 
 class InstantlyClient {
@@ -68,6 +85,20 @@ class InstantlyClient {
 
     const response = await this.client.get<CampaignAnalytics[]>(
       `/campaigns/analytics?${queryParams.toString()}`
+    );
+    return response.data;
+  }
+
+  async getAnalyticsOverview(params: AnalyticsParams = {}): Promise<AnalyticsOverview> {
+    const queryParams = new URLSearchParams();
+
+    if (params.id) queryParams.append('id', params.id);
+    if (params.ids) params.ids.forEach(id => queryParams.append('ids', id));
+    if (params.start_date) queryParams.append('start_date', params.start_date);
+    if (params.end_date) queryParams.append('end_date', params.end_date);
+
+    const response = await this.client.get<AnalyticsOverview>(
+      `/campaigns/analytics/overview?${queryParams.toString()}`
     );
     return response.data;
   }

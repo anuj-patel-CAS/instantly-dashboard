@@ -21,6 +21,7 @@ export function EngagementChart({ campaigns }: EngagementChartProps) {
       : campaign.campaign_name,
     Opens: campaign.open_count,
     Replies: campaign.reply_count,
+    Opportunities: campaign.total_opportunities,
     Clicks: campaign.link_click_count,
   }));
 
@@ -49,6 +50,7 @@ export function EngagementChart({ campaigns }: EngagementChartProps) {
             <Legend wrapperStyle={{ paddingTop: '20px' }} />
             <Bar dataKey="Opens" fill="#3B82F6" radius={[4, 4, 0, 0]} />
             <Bar dataKey="Replies" fill="#10B981" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="Opportunities" fill="#F59E0B" radius={[4, 4, 0, 0]} />
             <Bar dataKey="Clicks" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>

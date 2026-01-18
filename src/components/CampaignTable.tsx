@@ -65,6 +65,9 @@ export function CampaignTable({ campaigns }: CampaignTableProps) {
                 Replies
               </th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Opportunities
+              </th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Clicks
               </th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -98,6 +101,9 @@ export function CampaignTable({ campaigns }: CampaignTableProps) {
                   <span className="text-gray-500 ml-1">
                     ({formatPercent(campaign.reply_count, campaign.emails_sent_count)})
                   </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                  <span className="text-green-600 font-medium">{campaign.total_opportunities.toLocaleString()}</span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
                   <span className="text-gray-900">{campaign.link_click_count.toLocaleString()}</span>

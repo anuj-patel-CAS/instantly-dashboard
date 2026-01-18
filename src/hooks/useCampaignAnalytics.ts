@@ -9,6 +9,8 @@ export type AnalyticsSummary = {
   totalReplies: number;
   totalClicks: number;
   totalBounces: number;
+  totalOpportunities: number;
+  totalOpportunityValue: number;
   avgOpenRate: number;
   avgReplyRate: number;
   avgClickRate: number;
@@ -24,6 +26,15 @@ export function useCampaignAnalytics(params: AnalyticsParams = {}) {
   });
 }
 
+export function useAnalyticsOverview(params: AnalyticsParams = {}) {
+  return useQuery({
+    queryKey: ['analyticsOverview', params],
+    queryFn: () => getInstantlyClient().getAnalyticsOverview(params),
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
+}
+
 export function calculateSummary(campaigns: CampaignAnalytics[]): AnalyticsSummary {
   const totals = campaigns.reduce(
     (acc, campaign) => ({
@@ -33,6 +44,8 @@ export function calculateSummary(campaigns: CampaignAnalytics[]): AnalyticsSumma
       totalReplies: acc.totalReplies + campaign.reply_count,
       totalClicks: acc.totalClicks + campaign.link_click_count,
       totalBounces: acc.totalBounces + campaign.bounced_count,
+      totalOpportunities: acc.totalOpportunities + campaign.total_opportunities,
+      totalOpportunityValue: acc.totalOpportunityValue + campaign.total_opportunity_value,
     }),
     {
       totalEmailsSent: 0,
@@ -41,6 +54,8 @@ export function calculateSummary(campaigns: CampaignAnalytics[]): AnalyticsSumma
       totalReplies: 0,
       totalClicks: 0,
       totalBounces: 0,
+      totalOpportunities: 0,
+      totalOpportunityValue: 0,
     }
   );
 

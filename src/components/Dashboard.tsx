@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { useCampaignAnalytics, calculateSummary } from '../hooks/useCampaignAnalytics';
+import { useCampaignAnalytics, useAnalyticsOverview, calculateSummary } from '../hooks/useCampaignAnalytics';
 import { MetricCard } from './MetricCard';
 import { DateRangePicker } from './DateRangePicker';
 import { CampaignTable } from './CampaignTable';
@@ -26,6 +26,12 @@ export function Dashboard() {
   const { data: campaigns, isLoading, error } = useCampaignAnalytics({
     start_date: startDate,
     end_date: endDate,
+  });
+
+  const { data: overview } = useAnalyticsOverview({
+    start_date: startDate,
+    end_date: endDate,
+    ids: selectedCampaignIds.length > 0 ? selectedCampaignIds : undefined,
   });
 
   const filteredCampaigns = useMemo(() => {
@@ -135,7 +141,13 @@ export function Dashboard() {
             </div>
 
             {/* Secondary Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <MetricCard
+                title="Opportunities"
+                value={formatNumber(summary.totalOpportunities)}
+                subtitle={summary.totalOpportunityValue > 0 ? `$${formatNumber(summary.totalOpportunityValue)} value` : undefined}
+                trend="up"
+              />
               <MetricCard
                 title="Total Leads"
                 value={formatNumber(summary.totalLeads)}
@@ -151,6 +163,39 @@ export function Dashboard() {
                 value={filteredCampaigns.length}
               />
             </div>
+
+            {/* Opportunity Breakdown */}
+            {overview && (
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Opportunity Breakdown</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  <div className="text-center p-4 bg-blue-50 rounded-lg">
+                    <div className="text-2xl font-bold text-blue-600">
+                      {formatNumber(overview.total_interested)}
+                    </div>
+                    <div className="text-sm text-gray-600 mt-1">Interested</div>
+                  </div>
+                  <div className="text-center p-4 bg-purple-50 rounded-lg">
+                    <div className="text-2xl font-bold text-purple-600">
+                      {formatNumber(overview.total_meeting_booked)}
+                    </div>
+                    <div className="text-sm text-gray-600 mt-1">Meeting Booked</div>
+                  </div>
+                  <div className="text-center p-4 bg-amber-50 rounded-lg">
+                    <div className="text-2xl font-bold text-amber-600">
+                      {formatNumber(overview.total_meeting_completed)}
+                    </div>
+                    <div className="text-sm text-gray-600 mt-1">Meeting Completed</div>
+                  </div>
+                  <div className="text-center p-4 bg-green-50 rounded-lg">
+                    <div className="text-2xl font-bold text-green-600">
+                      {formatNumber(overview.total_closed)}
+                    </div>
+                    <div className="text-sm text-gray-600 mt-1">Closed</div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Engagement Chart */}
             <EngagementChart campaigns={filteredCampaigns} />
