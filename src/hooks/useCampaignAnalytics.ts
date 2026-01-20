@@ -35,6 +35,63 @@ export function useAnalyticsOverview(params: AnalyticsParams = {}) {
   });
 }
 
+export function useAllCampaigns() {
+  return useQuery({
+    queryKey: ['allCampaigns'],
+    queryFn: () => getInstantlyClient().getAllCampaigns(),
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
+}
+
+export function useAllCampaignsWithAnalytics(params: AnalyticsParams = {}) {
+  const campaignsQuery = useAllCampaigns();
+  const analyticsQuery = useCampaignAnalytics(params);
+
+  const isLoading = campaignsQuery.isLoading || analyticsQuery.isLoading;
+  const error = campaignsQuery.error || analyticsQuery.error;
+
+  const data = (() => {
+    if (!campaignsQuery.data) return undefined;
+
+    const analyticsMap = new Map<string, CampaignAnalytics>();
+    if (analyticsQuery.data) {
+      analyticsQuery.data.forEach((a) => analyticsMap.set(a.campaign_id, a));
+    }
+
+    return campaignsQuery.data.map((campaign): CampaignAnalytics => {
+      const analytics = analyticsMap.get(campaign.id);
+      if (analytics) {
+        return analytics;
+      }
+      // Return campaign with zero metrics if no analytics found
+      return {
+        campaign_id: campaign.id,
+        campaign_name: campaign.name,
+        campaign_status: campaign.status,
+        campaign_is_evergreen: false,
+        leads_count: 0,
+        contacted_count: 0,
+        emails_sent_count: 0,
+        open_count: 0,
+        open_count_unique: 0,
+        reply_count: 0,
+        reply_count_unique: 0,
+        link_click_count: 0,
+        link_click_count_unique: 0,
+        bounced_count: 0,
+        unsubscribed_count: 0,
+        completed_count: 0,
+        new_leads_contacted_count: 0,
+        total_opportunities: 0,
+        total_opportunity_value: 0,
+      };
+    });
+  })();
+
+  return { data, isLoading, error };
+}
+
 export function calculateSummary(campaigns: CampaignAnalytics[]): AnalyticsSummary {
   const totals = campaigns.reduce(
     (acc, campaign) => ({

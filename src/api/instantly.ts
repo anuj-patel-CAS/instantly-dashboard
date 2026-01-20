@@ -57,6 +57,19 @@ export type AnalyticsOverview = {
   total_closed: number;
 };
 
+export type Campaign = {
+  id: string;
+  name: string;
+  status: CampaignStatusType;
+  created_at: string;
+  updated_at: string;
+};
+
+export type CampaignsListResponse = {
+  items: Campaign[];
+  next_starting_after?: string;
+};
+
 const API_BASE_URL = '/api/v2';
 
 class InstantlyClient {
@@ -101,6 +114,30 @@ class InstantlyClient {
       `/campaigns/analytics/overview?${queryParams.toString()}`
     );
     return response.data;
+  }
+
+  async listCampaigns(limit: number = 100, startingAfter?: string): Promise<CampaignsListResponse> {
+    const queryParams = new URLSearchParams();
+    queryParams.append('limit', String(limit));
+    if (startingAfter) queryParams.append('starting_after', startingAfter);
+
+    const response = await this.client.get<CampaignsListResponse>(
+      `/campaigns?${queryParams.toString()}`
+    );
+    return response.data;
+  }
+
+  async getAllCampaigns(): Promise<Campaign[]> {
+    const allCampaigns: Campaign[] = [];
+    let startingAfter: string | undefined;
+
+    do {
+      const response = await this.listCampaigns(100, startingAfter);
+      allCampaigns.push(...response.items);
+      startingAfter = response.next_starting_after;
+    } while (startingAfter);
+
+    return allCampaigns;
   }
 }
 

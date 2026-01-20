@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { useCampaignAnalytics, useAnalyticsOverview, calculateSummary } from '../hooks/useCampaignAnalytics';
+import { useAllCampaignsWithAnalytics, useAnalyticsOverview, calculateSummary } from '../hooks/useCampaignAnalytics';
 import { MetricCard } from './MetricCard';
 import { DateRangePicker } from './DateRangePicker';
 import { CampaignTable } from './CampaignTable';
@@ -23,7 +23,7 @@ export function Dashboard() {
   const [selectedCampaignIds, setSelectedCampaignIds] = useState<string[]>([]);
   const [selectedStatuses, setSelectedStatuses] = useState<number[]>([]);
 
-  const { data: campaigns, isLoading, error } = useCampaignAnalytics({
+  const { data: campaigns, isLoading, error } = useAllCampaignsWithAnalytics({
     start_date: startDate,
     end_date: endDate,
   });
