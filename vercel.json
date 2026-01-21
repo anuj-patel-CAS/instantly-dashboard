@@ -1,8 +1,16 @@
 {
   "rewrites": [
     {
+      "source": "/api/v2/campaigns/analytics/overview",
+      "destination": "/api/campaigns/analytics/overview"
+    },
+    {
       "source": "/api/v2/campaigns/analytics",
       "destination": "/api/campaigns/analytics"
+    },
+    {
+      "source": "/api/v2/campaigns",
+      "destination": "/api/campaigns"
     }
   ]
 }
